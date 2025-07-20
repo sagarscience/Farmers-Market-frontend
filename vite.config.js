@@ -10,6 +10,10 @@ export default defineConfig({
   },
   base: '/', // Make sure paths resolve correctly
 
- 
+  server: {
+    proxy: {
+      '/api': 'https://farmers-market-backend-f1u8.onrender.com/'  // Forward API requests to backend
+    }
+  },
 })
 
