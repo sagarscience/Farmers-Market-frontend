@@ -1,6 +1,5 @@
-// components/ChatLink.jsx
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 export default function ChatLink() {
   const { auth } = useAuth();
@@ -8,17 +7,16 @@ export default function ChatLink() {
 
   const handleClick = (e) => {
     if (!auth?.token) {
-      e.preventDefault(); // prevent default <Link> navigation
+      e.preventDefault();
       navigate("/login");
     }
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-    >
-      💬 Chat Room
-    </button>
+    <Link to="/chat" onClick={handleClick}>
+      <div className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+        💬 Chat Room
+      </div>
+    </Link>
   );
 }

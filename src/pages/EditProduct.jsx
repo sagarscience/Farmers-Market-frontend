@@ -20,14 +20,16 @@ export default function EditProduct() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products/my", {
-          headers: { Authorization: `Bearer ${auth.token}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/products/my`,
+          {
+            headers: { Authorization: `Bearer ${auth.token}` },
+          }
+        );
 
         const product = res.data.find((p) => p._id === id);
-        if (!product) return alert("Product not found");
+        if (!product) return alert("❌ Product not found.");
 
-        // ✅ Only pick relevant fields
         setForm({
           name: product.name || "",
           description: product.description || "",
@@ -52,15 +54,24 @@ export default function EditProduct() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
+    if (form.price < 0 || form.quantity < 0) {
+      return alert("❌ Price and Quantity cannot be negative.");
+    }
+
     try {
-      await axios.put(`http://localhost:5000/api/products/${id}`, form, {
-        headers: { Authorization: `Bearer ${auth.token}` },
-      });
-      alert("✅ Product updated successfully");
+      await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/api/products/${id}`,
+        form,
+        {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        }
+      );
+      alert("✅ Product updated successfully.");
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to update product");
+      alert("❌ Failed to update product.");
     }
   };
 
@@ -82,12 +93,9 @@ export default function EditProduct() {
           Edit Product
         </h2>
 
-        {/* Product Name */}
+        {/* Name */}
         <div className="mb-4">
-          <label
-            htmlFor="name"
-            className="block text-gray-700 font-medium mb-1"
-          >
+          <label htmlFor="name" className="block text-gray-700 font-medium mb-1">
             Product Name
           </label>
           <input
@@ -96,17 +104,14 @@ export default function EditProduct() {
             type="text"
             value={form.name}
             onChange={handleChange}
-            className="w-full p-2 border  text-gray-700 border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 text-gray-700 rounded"
             required
           />
         </div>
 
         {/* Description */}
         <div className="mb-4">
-          <label
-            htmlFor="description"
-            className="block text-gray-700 font-medium mb-1"
-          >
+          <label htmlFor="description" className="block text-gray-700 font-medium mb-1">
             Description
           </label>
           <textarea
@@ -114,18 +119,15 @@ export default function EditProduct() {
             name="description"
             value={form.description}
             onChange={handleChange}
-            className="w-full p-2 border  text-gray-700 border-gray-300 rounded"
             rows={3}
+            className="w-full p-2 border border-gray-300 text-gray-700 rounded"
             required
           ></textarea>
         </div>
 
         {/* Price */}
         <div className="mb-4">
-          <label
-            htmlFor="price"
-            className="block text-gray-700 font-medium mb-1"
-          >
+          <label htmlFor="price" className="block text-gray-700 font-medium mb-1">
             Price (₹)
           </label>
           <input
@@ -134,17 +136,15 @@ export default function EditProduct() {
             type="number"
             value={form.price}
             onChange={handleChange}
-            className="w-full p-2 border  text-gray-700 border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 text-gray-700 rounded"
+            min="0"
             required
           />
         </div>
 
         {/* Quantity */}
         <div className="mb-4">
-          <label
-            htmlFor="quantity"
-            className="block text-gray-700 font-medium mb-1"
-          >
+          <label htmlFor="quantity" className="block text-gray-700 font-medium mb-1">
             Quantity (kg)
           </label>
           <input
@@ -153,17 +153,15 @@ export default function EditProduct() {
             type="number"
             value={form.quantity}
             onChange={handleChange}
-            className="w-full p-2 border  text-gray-700 border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 text-gray-700 rounded"
+            min="0"
             required
           />
         </div>
 
         {/* Image URL */}
         <div className="mb-6">
-          <label
-            htmlFor="imageUrl"
-            className="block text-gray-700 font-medium mb-1"
-          >
+          <label htmlFor="imageUrl" className="block text-gray-700 font-medium mb-1">
             Image URL
           </label>
           <input
@@ -172,17 +170,17 @@ export default function EditProduct() {
             type="url"
             value={form.imageUrl}
             onChange={handleChange}
-            className="w-full p-2 border text-gray-700 border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 text-gray-700 rounded"
           />
 
-          {/* 🔍 Live Image Preview */}
           {form.imageUrl && (
             <img
               src={form.imageUrl}
               alt="Preview"
               className="mt-3 w-full h-40 object-cover rounded border"
               onError={(e) => {
-                e.target.src = "/default-produce.jpg"; // fallback if image URL fails
+                e.target.onerror = null;
+                e.target.src = "/default-produce.jpg";
               }}
             />
           )}

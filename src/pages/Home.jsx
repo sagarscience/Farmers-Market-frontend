@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-
-const BACKEND_BASE =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const BACKEND_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const defaultCities = ["Delhi", "Pune", "Nagpur", "Lucknow", "Indore"];
 
 export default function Home() {
@@ -14,12 +12,13 @@ export default function Home() {
   const [customCityWeather, setCustomCityWeather] = useState(null);
   const [error, setError] = useState("");
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch weather for one city
   const fetchWeather = async (city) => {
     try {
       const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${import.meta.env.VITE_API_KEY}`
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=e5a38898ac3f9e33f6b1ec32b12bf374`
       );
       if (!res.ok) throw new Error("City not found");
       const data = await res.json();
@@ -31,12 +30,12 @@ export default function Home() {
         wind: data.wind.speed,
         icon: data.weather[0].icon,
       };
-    } catch {
+    } catch (err) {
+      console.error("Failed to fetch weather for:", city, err);
       return null;
     }
   };
 
-  // Initial data load
   useEffect(() => {
     const loadInitialData = async () => {
       AOS.init({ duration: 1000 });
@@ -50,13 +49,14 @@ export default function Home() {
         setProducts(data);
       } catch (err) {
         console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadInitialData();
   }, []);
 
-  // Search form handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -70,14 +70,11 @@ export default function Home() {
 
   return (
     <div className="bg-green-50 min-h-screen text-gray-800">
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="bg-green-600 text-white text-center py-12 px-4">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-          Welcome to FarmersMarket
-        </h1>
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4">Welcome to FarmersMarket</h1>
         <p className="text-lg mx-auto max-w-2xl">
-          Your trusted platform for trading, weather updates, and natural
-          farming.
+          Your trusted platform for trading, weather updates, and natural farming.
         </p>
         <Link
           to="/register"
@@ -89,9 +86,8 @@ export default function Home() {
 
       {/* Weather Updates */}
       <section className="max-w-6xl mx-auto py-12 px-4">
-        <h2 className="text-2xl font-bold mb-6">
-          🌦 Weather Update (Agro Cities)
-        </h2>
+        <h2 className="text-2xl font-bold mb-6">🌦 Weather Update (Agro Cities)</h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {weatherData.map((city) =>
             city ? (
@@ -114,13 +110,8 @@ export default function Home() {
           )}
         </div>
 
-        <h2 className="text-xl font-bold mb-4">
-          🔍 Check Weather in Your City
-        </h2>
-        <form
-          onSubmit={handleSubmit}
-          className="mb-8 flex flex-col sm:flex-row gap-4"
-        >
+        <h2 className="text-xl font-bold mb-4">🔍 Check Weather in Your City</h2>
+        <form onSubmit={handleSubmit} className="mb-8 flex flex-col sm:flex-row gap-4">
           <input
             type="text"
             placeholder="Enter city name..."
@@ -143,9 +134,7 @@ export default function Home() {
               alt={customCityWeather.desc}
               className="w-16 h-16 mx-auto"
             />
-            <p className="capitalize text-sm text-gray-700">
-              {customCityWeather.desc}
-            </p>
+            <p className="capitalize text-sm text-gray-700">{customCityWeather.desc}</p>
             <p className="text-sm">🌡 {customCityWeather.temp}°C</p>
             <p className="text-sm">💧 {customCityWeather.humidity}%</p>
             <p className="text-sm">🌬 {customCityWeather.wind} m/s</p>
@@ -153,12 +142,10 @@ export default function Home() {
         )}
       </section>
 
-      {/* Rooted in Nature Section */}
+      {/* Rooted in Nature */}
       <section className="bg-white py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-green-700 mb-4">
-            🌿 Rooted in Nature
-          </h2>
+          <h2 className="text-3xl font-bold text-green-700 mb-4">🌿 Rooted in Nature</h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-6">
             We believe food should be clean, real, and grown with love. Our
             farm-to-table organic model connects consumers with fresh, seasonal
@@ -187,11 +174,10 @@ export default function Home() {
                 desc: "Get fresh veggies, grains, and herbs delivered straight from farm to your kitchen.",
               },
             ].map((card, idx) => (
-              <div
-                key={idx}
-                className="bg-green-50 p-6 rounded shadow hover:shadow-md transition"
-              >
-                <h4 className="text-xl font-semibold mb-2 text-green-700">{`${card.icon} ${card.title}`}</h4>
+              <div key={idx} className="bg-green-50 p-6 rounded shadow hover:shadow-md transition">
+                <h4 className="text-xl font-semibold mb-2 text-green-700">
+                  {`${card.icon} ${card.title}`}
+                </h4>
                 <p className="text-sm text-gray-700">{card.desc}</p>
               </div>
             ))}
@@ -202,47 +188,50 @@ export default function Home() {
       {/* Product Showcase */}
       <section className="bg-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6">
-            🌾 Featured Farm Offerings
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => {
-              const isAvailable = product.quantity > 0;
+          <h2 className="text-2xl font-bold mb-6">🌾 Featured Farm Offerings</h2>
+          {loading ? (
+            <p className="text-gray-500">Loading products...</p>
+          ) : products.length === 0 ? (
+            <p className="text-gray-500">No products available at the moment.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((product) => {
+                const isAvailable = product.quantity > 0;
 
-              return (
-                <div
-                  key={product._id}
-                  className="border rounded shadow p-4 bg-green-90 hover:shadow-md transition"
-                >
-                  <img
-                    src={product.imageUrl || "/default-produce.jpg"}
-                    alt={product.name || "Organic Product"}
-                    className="h-40 w-full object-cover rounded mb-3"
-                  />
-                  <h3 className="text-lg font-semibold">{product.name}</h3>
-                  <p className="text-sm text-gray-700">
-                    {product.description?.slice(0, 60)}...
-                  </p>
-                  <p className="text-green-700 font-bold mt-2">
-                    ₹{product.price} / kg
-                  </p>
-
-                  {/* 🔁 Stock Info with Badge */}
-                  <div className="mt-2">
-                    {isAvailable ? (
-                      <p className="text-sm text-gray-600 font-medium">
-                        Stock: {product.quantity} kg available
-                      </p>
-                    ) : (
-                      <span className="inline-block bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full font-semibold">
-                        Out of Stock
-                      </span>
-                    )}
+                return (
+                  <div
+                    key={product._id}
+                    className="border rounded shadow p-4 bg-green-90 hover:shadow-md transition"
+                  >
+                    <img
+                      src={product.imageUrl || "/default-produce.jpg"}
+                      alt={`${product.name || "Farm product"} image`}
+                      onError={(e) => (e.target.src = "/default-produce.jpg")}
+                      className="h-40 w-full object-cover rounded mb-3"
+                    />
+                    <h3 className="text-lg font-semibold">{product.name}</h3>
+                    <p className="text-sm text-gray-700">
+                      {product.description?.slice(0, 60)}...
+                    </p>
+                    <p className="text-green-700 font-bold mt-2">
+                      ₹{product.price} / kg
+                    </p>
+                    <div className="mt-2">
+                      {isAvailable ? (
+                        <p className="text-sm text-gray-600 font-medium">
+                          Stock: {product.quantity} kg available
+                        </p>
+                      ) : (
+                        <span className="inline-block bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full font-semibold">
+                          Out of Stock
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

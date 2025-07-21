@@ -15,21 +15,26 @@ export default function ChatUserList() {
   };
 
   return (
-    <div className="p-4 border rounded shadow bg-white max-w-md mx-auto mt-6">
-      <h2 className="text-lg font-bold text-green-700 mb-3">🟢 Online Users</h2>
-      {onlineUsers.length === 0 ? (
-        <p className="text-sm text-gray-500">No users online</p>
+    <div className="p-6 max-w-md mx-auto mt-8 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold text-green-700 mb-4">🟢 Online Users</h2>
+
+      {onlineUsers.length <= 1 ? (
+        <p className="text-gray-500 text-sm">No other users online.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {onlineUsers
             .filter((u) => u.name !== auth.user?.name)
             .map((user, i) => (
               <li
                 key={i}
-                className="cursor-pointer hover:text-green-700 text-gray-800"
                 onClick={() => handleSelectUser(user)}
+                className="cursor-pointer p-2 hover:bg-green-50 border rounded flex justify-between items-center transition"
               >
-                {user.name} <span className="text-sm text-gray-500">({user.role})</span>
+                <div>
+                  <p className="text-gray-800 font-medium">{user.name}</p>
+                  <span className="text-xs text-gray-500">{user.role}</span>
+                </div>
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
               </li>
             ))}
         </ul>

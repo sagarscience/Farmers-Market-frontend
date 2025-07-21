@@ -44,7 +44,9 @@ export default function Cart() {
         </h2>
 
         {cart.length === 0 ? (
-          <p className="text-center text-gray-600 text-lg">Your cart is empty.</p>
+          <p className="text-center text-gray-600 text-lg">
+            Your cart is empty.
+          </p>
         ) : (
           <>
             <div className="space-y-4 mb-6">
@@ -60,7 +62,8 @@ export default function Cart() {
                       onChange={() => handleCheckbox(item._id)}
                       className="h-5 w-5 mt-1"
                     />
-                    {/* Image Preview */}
+
+                    {/* Product Image */}
                     {item.imageUrl && (
                       <img
                         src={item.imageUrl}
@@ -68,32 +71,59 @@ export default function Cart() {
                         className="w-20 h-20 object-cover rounded shadow"
                       />
                     )}
+
                     {/* Product Info */}
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-green-800">{item.name}</h3>
-                      <p className="text-sm text-gray-600">{item.description}</p>
+                      <h3 className="text-lg font-semibold text-green-800">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {item.description}
+                      </p>
                       <p className="text-sm mt-1 font-medium text-gray-800">
                         ₹{item.price} × {item.quantity} ={" "}
-                        <span className="font-bold">₹{item.price * item.quantity}</span>
+                        <span className="font-bold">
+                          ₹{item.price * item.quantity}
+                        </span>
                       </p>
 
+                      {/* Quantity Controls */}
                       <div className="flex gap-2 mt-2">
                         <button
-                          onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                          onClick={() => {
+                            const newQty = item.quantity - 1;
+                            if (newQty <= 0) {
+                              handleRemove(item._id);
+                            } else {
+                              updateQuantity(item._id, newQty);
+                            }
+                          }}
                           className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
                         >
                           −
                         </button>
+
                         <span className="w-10 text-center font-semibold text-gray-800">
                           {item.quantity}
                         </span>
+
                         <button
-                          onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                          onClick={() => {
+                            if (item.quantity < item.stock) {
+                              updateQuantity(item._id, item.quantity + 1);
+                            } else {
+                              toast.warn("Cannot exceed available stock.");
+                            }
+                          }}
                           className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
                         >
                           +
                         </button>
                       </div>
+
+                      <p className="text-sm text-gray-500 mt-1">
+                        In stock: {item.stock}
+                      </p>
                     </div>
 
                     {/* Remove Button */}
@@ -108,7 +138,7 @@ export default function Cart() {
               ))}
             </div>
 
-            {/* Cart Footer */}
+            {/* Footer */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <p className="text-xl font-semibold text-green-900">
                 Total: ₹{total}
@@ -122,7 +152,7 @@ export default function Cart() {
                 </button>
                 <button
                   onClick={handleClearCart}
-                  className="bg-red-700 hover:bg-gray-500 text-gray-100 px-4 py-2 rounded"
+                  className="bg-red-700 hover:bg-gray-500 text-white px-4 py-2 rounded"
                 >
                   🗑 Clear Cart
                 </button>

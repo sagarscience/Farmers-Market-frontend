@@ -10,6 +10,8 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const total = cart.reduce(
     (sum, item) => sum + item.price * (item.quantity || 1),
     0
@@ -37,7 +39,7 @@ export default function Checkout() {
     setLoading(true);
     try {
       const { data: order } = await axios.post(
-        "http://localhost:5000/api/payment/create-order",
+        `${API_BASE}/api/payment/create-order`,
         { amount: total }
       );
 
@@ -51,7 +53,7 @@ export default function Checkout() {
         handler: async function (response) {
           try {
             await axios.post(
-              "http://localhost:5000/api/orders",
+              `${API_BASE}/api/orders`,
               {
                 cart,
                 total,
@@ -67,7 +69,7 @@ export default function Checkout() {
             clearCart();
             navigate("/dashboard");
           } catch (err) {
-            console.error("Order save failed", err);
+            console.error("Order save failed:", err);
             alert("Payment succeeded, but order save failed.");
           }
         },

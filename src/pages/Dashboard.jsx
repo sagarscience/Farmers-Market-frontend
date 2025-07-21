@@ -6,9 +6,18 @@ import AdminDashboard from "./AdminDashboard";
 export default function Dashboard() {
   const { auth } = useAuth();
 
-  if (auth.role === "buyer") return <BuyerDashboard />;
-  if (auth.role === "farmer") return <FarmerDashboard />;
-  if (auth.role === "admin") return <AdminDashboard />;
+  if (!auth?.role) {
+    return <p className="p-6 text-red-500">⚠️ Not authorized or role missing.</p>;
+  }
 
-  return <p className="p-6 text-red-500">Invalid role or not authorized</p>;
+  switch (auth.role) {
+    case "buyer":
+      return <BuyerDashboard />;
+    case "farmer":
+      return <FarmerDashboard />;
+    case "admin":
+      return <AdminDashboard />;
+    default:
+      return <p className="p-6 text-red-500">⚠️ Unknown role: {auth.role}</p>;
+  }
 }

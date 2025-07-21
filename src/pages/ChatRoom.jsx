@@ -13,19 +13,23 @@ export default function ChatRoom() {
   const [messages, setMessages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const typingTimeoutRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
+  // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !auth.token) {
       navigate("/login");
     }
   }, [auth.token, loading, navigate]);
 
+  // Join chat room
   useEffect(() => {
     if (socket && roomId && auth?.user?.name) {
       socket.emit("joinRoom", roomId);
     }
   }, [socket, roomId, auth?.user?.name]);
 
+  // Socket listeners
   useEffect(() => {
     if (!socket) return;
 
@@ -40,11 +44,17 @@ export default function ChatRoom() {
     };
   }, [socket]);
 
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const handleTyping = (e) => {
     setMessage(e.target.value);
     if (socket && auth?.user?.name) {
       socket.emit("typing", { from: auth.user.name });
     }
+
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
       socket.emit("stopTyping");
@@ -71,7 +81,8 @@ export default function ChatRoom() {
   );
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow rounded flex flex-col sm:flex-row gap-4">
+    <div className="max-w-5xl mx-auto mt-10 p-6 bg-white shadow rounded flex flex-col sm:flex-row gap-4">
+      {/* Online Users */}
       <div className="w-full sm:w-1/4 border-r pr-4">
         <h3 className="text-lg font-semibold text-green-700 mb-3">🟢 Online Users</h3>
         {onlineUsers.length === 0 ? (
@@ -88,8 +99,9 @@ export default function ChatRoom() {
         )}
       </div>
 
+      {/* Chat Panel */}
       <div className="flex-1 flex flex-col">
-        <h2 className="text-xl font-bold mb-4 text-green-700">💬 Chat Room</h2>
+        <h2 className="text-xl font-bold mb-4 text-green-700">💬 Chat Room: {roomId}</h2>
 
         <input
           type="text"
@@ -99,7 +111,7 @@ export default function ChatRoom() {
           className="mb-4 w-full border px-3 py-2 rounded text-sm text-gray-700"
         />
 
-        <div className="h-110 overflow-y-auto mb-4 border rounded p-3 bg-gray-50">
+        <div className="h-[30rem] overflow-y-auto mb-4 border rounded p-3 bg-gray-50">
           {filteredMessages.length === 0 ? (
             <p className="text-gray-400 text-sm">No messages found.</p>
           ) : (
@@ -108,7 +120,7 @@ export default function ChatRoom() {
               return (
                 <div
                   key={i}
-                  className={`flex flex-col max-w-[75%] ${
+                  className={`flex flex-col max-w-[75%] mb-2 ${
                     isOwn ? "ml-auto items-end" : "items-start"
                   }`}
                 >
@@ -139,10 +151,10 @@ export default function ChatRoom() {
           )}
 
           {typingUser && typingUser !== auth.user.name && (
-            <div className="text-sm text-gray-500 italic">
-              {typingUser} is typing...
-            </div>
+            <div className="text-sm text-gray-500 italic">{typingUser} is typing...</div>
           )}
+
+          <div ref={messagesEndRef} />
         </div>
 
         <div className="flex gap-2">
@@ -153,6 +165,7 @@ export default function ChatRoom() {
             value={message}
             onChange={handleTyping}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            disabled={!socket?.connected}
           />
           <button
             onClick={handleSend}

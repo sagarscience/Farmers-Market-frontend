@@ -7,18 +7,20 @@ export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const { auth } = useAuth();
 
+  // Format currency in INR
   const formatPrice = (amt) =>
     new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
     }).format(amt);
 
+  // Fetch user's order history
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/orders/my", {
           headers: {
-            Authorization: `Bearer ${auth.token}`, // ✅ Fixed syntax
+            Authorization: `Bearer ${auth.token}`,
           },
         });
         setOrders(res.data);
@@ -30,7 +32,7 @@ export default function OrderHistory() {
     fetchOrders();
   }, [auth.token]);
 
-  // ✅ Download Invoice (with token and blob)
+  // Download Invoice as PDF
   const handleDownloadInvoice = async (orderId) => {
     try {
       const res = await axios.get(
@@ -72,23 +74,25 @@ export default function OrderHistory() {
               key={order._id}
               className="bg-white p-6 rounded-lg shadow border hover:shadow-md transition"
             >
-              <div className="mb-2 text-sm text-gray-600">
-                <span className="block">
+              {/* Order Header Info */}
+              <div className="mb-2 text-sm text-gray-600 space-y-1">
+                <p>
                   <strong>📅 Date:</strong>{" "}
                   {new Date(order.createdAt).toLocaleString()}
-                </span>
-                <span className="block">
+                </p>
+                <p>
                   <strong>🧾 Payment ID:</strong>{" "}
                   <span className="font-mono">{order.paymentId || "N/A"}</span>
-                </span>
-                <span className="block">
+                </p>
+                <p>
                   <strong>🚚 Status:</strong>{" "}
                   <span className="text-green-700 font-semibold">
                     {order.status}
                   </span>
-                </span>
+                </p>
               </div>
 
+              {/* Items List */}
               <div className="mt-3">
                 <h4 className="text-md font-semibold mb-1 text-gray-700">
                   Items Ordered:
@@ -106,24 +110,27 @@ export default function OrderHistory() {
                 </ul>
               </div>
 
-              <p className="text-right text-green-700 font-bold mt-4">
-                Total: {formatPrice(order.totalAmount)}
-              </p>
+              {/* Total + Actions */}
+              <div className="mt-4 flex justify-between items-center">
+                <p className="text-green-700 font-bold text-lg">
+                  Total: {formatPrice(order.totalAmount)}
+                </p>
 
-              <div className="flex justify-between items-center mt-3">
-                <Link
-                  to={`/orders/${order._id}`}
-                  className="text-sm text-green-600 underline hover:text-green-800"
-                >
-                  📦 Track Order
-                </Link>
+                <div className="flex gap-3">
+                  <Link
+                    to={`/orders/${order._id}`}
+                    className="text-sm text-green-600 underline hover:text-green-800"
+                  >
+                    📦 Track Order
+                  </Link>
 
-                <button
-                  className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm"
-                  onClick={() => handleDownloadInvoice(order._id)}
-                >
-                  🧾 Download Invoice
-                </button>
+                  <button
+                    onClick={() => handleDownloadInvoice(order._id)}
+                    className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm"
+                  >
+                    🧾 Download Invoice
+                  </button>
+                </div>
               </div>
             </div>
           ))}

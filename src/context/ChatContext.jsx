@@ -13,16 +13,21 @@ export const ChatProvider = ({ children }) => {
   const [typingUser, setTypingUser] = useState("");
 
   useEffect(() => {
-    if (!auth?.user?.name) return;
+    if (!auth?.user?.name || !auth?.role) return;
 
     const newSocket = io(SOCKET_URL, {
-      query: { name: auth.user.name , role: auth.role },
+      query: { name: auth.user.name, role: auth.role },
+      transports: ["websocket"], // Force WebSocket for more stable connection
     });
 
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
       console.log("✅ Connected to socket:", newSocket.id);
+    });
+
+    newSocket.on("connect_error", (err) => {
+      console.error("❌ Socket connection error:", err.message);
     });
 
     newSocket.on("onlineUsers", (users) => {
@@ -38,12 +43,15 @@ export const ChatProvider = ({ children }) => {
     });
 
     return () => {
-      newSocket.disconnect();
+      if (newSocket) {
+        newSocket.disconnect();
+        console.log("🔌 Disconnected from socket");
+      }
+      setSocket(null);
       setOnlineUsers([]);
       setTypingUser("");
-      console.log("🔌 Disconnected from socket");
     };
-  }, [auth?.user?.name]);
+  }, [auth?.user?.name, auth?.role]);
 
   return (
     <ChatContext.Provider value={{ socket, onlineUsers, typingUser }}>

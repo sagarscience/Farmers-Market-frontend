@@ -7,12 +7,13 @@ export const CartProvider = ({ children }) => {
     try {
       const stored = localStorage.getItem("cart");
       return stored ? JSON.parse(stored) : [];
-    } catch {
+    } catch (err) {
+      console.error("❌ Failed to parse cart from localStorage:", err);
       return [];
     }
   });
 
-  // Update localStorage on cart change
+  // Persist cart to localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
@@ -26,9 +27,8 @@ export const CartProvider = ({ children }) => {
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
-      } else {
-        return [...prevCart, { ...product, quantity: 1 }];
       }
+      return [...prevCart, { ...product, quantity: 1 ,stock: product.stock}];
     });
   };
 
@@ -38,7 +38,7 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem("cart"); // optional redundancy
+    localStorage.removeItem("cart");
   };
 
   const updateQuantity = (id, qty) => {
@@ -53,7 +53,7 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         cart,
-        setCart, // optional, but useful in future
+        setCart,
         addToCart,
         removeFromCart,
         clearCart,

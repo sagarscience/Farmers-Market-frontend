@@ -1,45 +1,50 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+
+// Layout
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
+// Public Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
+// Protected Pages
 import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./pages/ProtectedRoute";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderHistory from "./pages/OrderHistory";
 import AdminDashboard from "./pages/AdminDashboard";
-import ChatRoom from "./pages/ChatRoom";
 import OrderTracking from "./pages/OrderTracking";
+import ChatRoom from "./pages/ChatRoom";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
 export default function App() {
   const { auth, loading } = useAuth();
 
   if (loading) {
-    return <p className="p-6 text-center text-gray-600">Loading...</p>; // Global fallback during initial load
+    return <p className="p-6 text-center text-gray-600">Loading...</p>;
   }
 
   return (
     <>
       <Navbar />
+
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        {/* Role-Based Protected Routes */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              {/* Show dashboard based on user role */}
-              {auth.role === "farmer" ||
-              auth.role === "buyer" ||
-              auth.role === "admin" ? (
+              {["admin", "farmer", "buyer"].includes(auth.role) ? (
                 <Dashboard />
               ) : (
                 <Navigate to="/" replace />
@@ -110,6 +115,19 @@ export default function App() {
         />
 
         <Route
+          path="/orders/:orderId"
+          element={
+            <ProtectedRoute>
+              {["admin", "farmer", "buyer"].includes(auth.role) ? (
+                <OrderTracking />
+              ) : (
+                <Navigate to="/" replace />
+              )}
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin"
           element={
             <ProtectedRoute>
@@ -122,11 +140,10 @@ export default function App() {
           }
         />
 
+        {/* Public Chat Page */}
         <Route path="/chat" element={<ChatRoom />} />
-        <Route path="/orders/:orderId" element={<OrderTracking />} />
-
-
       </Routes>
+
       <Footer />
     </>
   );

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 export default function AdminDashboard() {
   const { auth } = useAuth();
   const [users, setUsers] = useState([]);
@@ -16,12 +18,10 @@ export default function AdminDashboard() {
       try {
         const headers = { Authorization: `Bearer ${auth.token}` };
         const [u, p, o] = await Promise.all([
-          axios.get("http://localhost:5000/api/admin/users", { headers }),
-          axios.get("http://localhost:5000/api/admin/products", { headers }),
-          axios.get("http://localhost:5000/api/admin/orders", { headers }),
+          axios.get(`${BASE_URL}/api/admin/users`, { headers }),
+          axios.get(`${BASE_URL}/api/admin/products`, { headers }),
+          axios.get(`${BASE_URL}/api/admin/orders`, { headers }),
         ]);
-      
-        
         setUsers(u.data);
         setProducts(p.data);
         setOrders(o.data);
@@ -34,79 +34,89 @@ export default function AdminDashboard() {
   }, [auth.token]);
 
   const handleDeleteUser = async (id) => {
-    if (!window.confirm("Delete this user?")) return;
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${id}`, {
+      await axios.delete(`${BASE_URL}/api/admin/users/${id}`, {
         headers: { Authorization: `Bearer ${auth.token}` },
       });
       setUsers(users.filter((u) => u._id !== id));
     } catch (err) {
-      console.error("User delete failed:", err);
+      console.error("Delete user failed:", err);
     }
   };
 
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm("Delete this product?")) return;
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/admin/products/${id}`, {
+      await axios.delete(`${BASE_URL}/api/admin/products/${id}`, {
         headers: { Authorization: `Bearer ${auth.token}` },
       });
       setProducts(products.filter((p) => p._id !== id));
     } catch (err) {
-      console.error("Product delete failed:", err);
+      console.error("Delete product failed:", err);
+    }
+  };
+
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const { data } = await axios.patch(
+        `${BASE_URL}/api/orders/${orderId}/track`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${auth.token}` } }
+      );
+      setOrders((prev) =>
+        prev.map((o) => (o._id === orderId ? { ...data.order, _newStatus: "" } : o))
+      );
+    } catch (err) {
+      console.error("Order update failed:", err);
+      alert("Failed to update order status");
     }
   };
 
   const filteredUsers = users.filter(
     (u) =>
-      u.name.toLowerCase().includes(userSearch.toLowerCase()) &&
+      u.name?.toLowerCase().includes(userSearch.toLowerCase()) &&
       (roleFilter ? u.role === roleFilter : true)
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <h2 className="text-3xl font-bold text-green-700 mb-6">
-        Admin Dashboard
-      </h2>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold text-green-700 mb-6">Admin Dashboard</h1>
 
-      {/* STATS CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <div className="bg-white p-4 shadow rounded text-center">
-          <h4 className="text-sm text-gray-500 mb-1">Total Users</h4>
-          <p className="text-2xl font-bold text-green-700">{users.length}</p>
-        </div>
-        <div className="bg-white p-4 shadow rounded text-center">
-          <h4 className="text-sm text-gray-500 mb-1">Total Products</h4>
-          <p className="text-2xl font-bold text-green-700">{products.length}</p>
-        </div>
-        <div className="bg-white p-4 shadow rounded text-center">
-          <h4 className="text-sm text-gray-500 mb-1">Total Orders</h4>
-          <p className="text-2xl font-bold text-green-700">{orders.length}</p>
-        </div>
-        <div className="bg-white p-4 shadow rounded text-center">
-          <h4 className="text-sm text-gray-500 mb-1">Total Revenue</h4>
-          <p className="text-2xl font-bold text-green-700">
-            ₹{orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0)}
-          </p>
-        </div>
+      {/* Stats */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {[
+          { label: "Total Users", value: users.length },
+          { label: "Total Products", value: products.length },
+          { label: "Total Orders", value: orders.length },
+          {
+            label: "Total Revenue",
+            value: `₹${orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0)}`,
+          },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white p-4 rounded shadow text-center">
+            <h4 className="text-gray-500 text-sm">{stat.label}</h4>
+            <p className="text-xl font-bold text-green-700">{stat.value}</p>
+          </div>
+        ))}
       </div>
 
-      {/* USERS */}
-      <section className="mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-2xl font-semibold text-gray-800">👥 Users</h3>
+      {/* Users */}
+      <section className="mb-12">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800">👥 Users</h2>
           <div className="flex gap-2">
             <input
               type="text"
-              placeholder="Search name..."
+              placeholder="Search by name"
               value={userSearch}
               onChange={(e) => setUserSearch(e.target.value)}
-              className="border  text-gray-800 px-3 py-1 rounded text-sm"
+              className="px-3 py-1 border rounded"
             />
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="border  text-gray-800 px-2 py-1 rounded text-sm"
+              className="px-2 py-1 border rounded"
             >
               <option value="">All Roles</option>
               <option value="farmer">Farmer</option>
@@ -116,23 +126,18 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded shadow p-4 space-y-2">
+        <div className="bg-white shadow rounded p-4 space-y-3">
           {filteredUsers.map((user) => (
-            <div
-              key={user._id}
-              className="flex justify-between items-center border-b pb-2"
-            >
+            <div key={user._id} className="flex justify-between items-center border-b pb-2">
               <div>
-                <p className="font-medium  text-gray-800">{user.name}</p>
+                <p className="font-semibold text-gray-800">{user.name}</p>
                 <p className="text-sm text-gray-500">{user.email}</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-green-100 px-2 py-1 rounded text-green-800">
-                  {user.role}
-                </span>
+                <span className="text-sm bg-green-100 px-2 py-1 rounded text-green-800">{user.role}</span>
                 <button
                   onClick={() => handleDeleteUser(user._id)}
-                  className="text-sm text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700"
+                  className="bg-red-600 text-white text-sm px-3 py-1 rounded hover:bg-red-700"
                 >
                   Delete
                 </button>
@@ -142,36 +147,26 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* PRODUCTS */}
-      <section className="mb-10">
-        <h3 className="text-2xl font-semibold text-gray-800 mb-3">
-          📦 Products
-        </h3>
-        <div className="bg-white rounded shadow p-4 space-y-4">
+      {/* Products */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-3">📦 Products</h2>
+        <div className="bg-white p-4 rounded shadow space-y-4">
           {products.map((prod) => (
-            <div
-              key={prod._id}
-              className="flex items-center justify-between border-b pb-3"
-            >
+            <div key={prod._id} className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-4">
                 {prod.imageUrl && (
-                  <img
-                    src={prod.imageUrl}
-                    alt={prod.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
+                  <img src={prod.imageUrl} alt={prod.name} className="w-14 h-14 object-cover rounded" />
                 )}
                 <div>
-                  <p className="font-medium  text-gray-800">{prod.name}</p>
+                  <p className="font-semibold text-gray-800">{prod.name}</p>
                   <p className="text-sm text-gray-500">
-                    ₹{prod.price} • {prod.quantity}kg • by{" "}
-                    {prod.createdBy?.name || "Unknown"}
+                    ₹{prod.price} • {prod.stock}kg • by {prod.createdBy?.name || "Unknown"}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => handleDeleteProduct(prod._id)}
-                className="text-sm text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700"
+                className="bg-red-600 text-white text-sm px-3 py-1 rounded hover:bg-red-700"
               >
                 Delete
               </button>
@@ -180,52 +175,39 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* ORDERS */}
+      {/* Orders */}
       <section>
-        <h3 className="text-2xl font-semibold text-gray-800 mb-3">🧾 Orders</h3>
-        <div className="bg-white rounded shadow p-4 space-y-6">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-3">🧾 Orders</h2>
+        <div className="bg-white p-4 rounded shadow space-y-5">
           {orders.map((order) => (
             <div key={order._id} className="border-b pb-4">
-              <p className="text-gray-800 font-semibold mb-1">
-                Buyer: {order.buyer?.name || "N/A"} • Total: ₹
-                {order.totalAmount}
+              <p className="font-semibold text-gray-800 mb-1">
+                Buyer: {order.buyer?.name || "N/A"} • ₹{order.totalAmount}
               </p>
-              <p className="text-sm text-gray-600 mb-1">
-                Payment ID: <span className="font-mono">{order.paymentId}</span>
-              </p>
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-gray-500 mb-1">Payment ID: {order.paymentId}</p>
+              <p className="text-sm text-gray-500 mb-2">
                 Ordered on: {new Date(order.createdAt).toLocaleString()}
               </p>
 
-              <ul className="list-disc ml-6 text-sm text-gray-700 mb-2">
+              <ul className="list-disc pl-6 text-sm mb-2">
                 {order.products.map((p, idx) => (
                   <li key={idx}>
-                    {p.name} — ₹{p.price} × {p.quantity} = ₹
-                    {p.price * p.quantity}
+                    {p.name} — ₹{p.price} × {p.quantity} = ₹{p.price * p.quantity}
                   </li>
                 ))}
               </ul>
 
-              <div className="mb-2">
-                <strong className="text-sm text-gray-600">Status:</strong>{" "}
-                <span className="text-green-700 font-semibold">
-                  {order.status}
-                </span>
-              </div>
-
-              <div className="flex items-center text-gray-500 gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-1">
                 <select
-                  className="border px-2 py-1 rounded text-sm"
                   value={order._newStatus || ""}
-                  onChange={(e) => 
+                  onChange={(e) =>
                     setOrders((prev) =>
                       prev.map((o) =>
-                        o._id === order._id
-                          ? { ...o, _newStatus: e.target.value }
-                          : o
+                        o._id === order._id ? { ...o, _newStatus: e.target.value } : o
                       )
                     )
                   }
+                  className="border px-2 py-1 rounded text-sm"
                 >
                   <option value="">-- Update Status --</option>
                   <option value="Processing">Processing</option>
@@ -233,37 +215,9 @@ export default function AdminDashboard() {
                   <option value="Delivered">Delivered</option>
                   <option value="Cancelled">Cancelled</option>
                 </select>
-
                 <button
+                  onClick={() => handleStatusChange(order._id, order._newStatus)}
                   className="bg-blue-600 text-white text-sm px-3 py-1 rounded hover:bg-blue-700"
-                  onClick={async () => {
-                    const newStatus = order._newStatus;
-                    if (!newStatus) return;
-
-                    try {
-                      const { data } = await axios.patch(
-                        `http://localhost:5000/api/orders/${order._id}/track`,
-                        { status: newStatus },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${auth.token}`,
-                          },
-                        }
-                      );
-
-                      // Update order status in state
-                      setOrders((prev) =>
-                        prev.map((o) =>
-                          o._id === order._id
-                            ? { ...data.order, _newStatus: "" }
-                            : o
-                        )
-                      );
-                    } catch (err) {
-                      console.error("Failed to update order:", err);
-                      alert("Failed to update order status");
-                    }
-                  }}
                 >
                   Save
                 </button>

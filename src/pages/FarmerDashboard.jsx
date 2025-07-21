@@ -13,58 +13,56 @@ export default function FarmerDashboard() {
     Authorization: `Bearer ${auth.token}`,
   };
 
-  // ✅ Fetch farmer's products
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products/my", {
-        headers,
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/api/products/my`,
+        { headers }
+      );
       setProducts(res.data);
-      console.log(headers);
     } catch (err) {
       console.error("Error fetching products:", err);
+      alert("Failed to load your products.");
     }
   };
 
-  // ✅ Fetch orders for farmer's products
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/orders/farmer", {
-        headers,
-      });
-
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/api/orders/farmer`,
+        { headers }
+      );
       setOrders(res.data);
     } catch (err) {
       console.error("Error fetching orders:", err);
+      alert("Failed to load orders.");
     }
   };
 
-  // ✅ Delete product
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`, {
-        headers: { Authorization: `Bearer ${auth.token}` },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}/api/products/${id}`,
+        { headers }
+      );
       setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Failed to delete product");
+      alert("❌ Failed to delete product.");
     }
   };
 
-  // ✅ Update order tracking status
   const handleUpdateStatus = async (orderId) => {
     const newStatus = statusUpdate[orderId];
     if (!newStatus) return;
 
     try {
       const res = await axios.patch(
-        `http://localhost:5000/api/orders/${orderId}/track`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}/track`,
         { status: newStatus },
-        { headers: { Authorization: `Bearer ${auth.token}` } }
+        { headers }
       );
       setOrders((prev) =>
         prev.map((o) => (o._id === orderId ? res.data.order : o))
@@ -72,22 +70,23 @@ export default function FarmerDashboard() {
       setStatusUpdate((prev) => ({ ...prev, [orderId]: "" }));
     } catch (err) {
       console.error("Failed to update status:", err);
+      alert("❌ Failed to update order status.");
     }
   };
 
   useEffect(() => {
-    fetchProducts();
-    fetchOrders();
+    if (auth?.token) {
+      fetchProducts();
+      fetchOrders();
+    }
   }, [auth.token]);
 
   return (
     <div className="p-6 space-y-10">
-      {/* ✅ FARMER'S PRODUCTS */}
+      {/* 🌱 PRODUCTS */}
       <section>
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-          <h2 className="text-3xl font-bold text-green-700">
-            🌱 Your Products
-          </h2>
+          <h2 className="text-3xl font-bold text-green-700">🌱 Your Products</h2>
           <Link
             to="/add-product"
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
@@ -125,8 +124,7 @@ export default function FarmerDashboard() {
                   {product.description?.slice(0, 60)}...
                 </p>
                 <p className="text-sm text-gray-800">
-                  <span className="font-semibold">Price:</span> ₹{product.price}{" "}
-                  / kg
+                  <span className="font-semibold">Price:</span> ₹{product.price} / kg
                 </p>
                 <p
                   className={`text-sm font-medium ${
@@ -134,9 +132,7 @@ export default function FarmerDashboard() {
                   }`}
                 >
                   <span className="font-semibold">Stock:</span>{" "}
-                  {product.quantity > 0
-                    ? `${product.quantity} kg`
-                    : "Out of Stock"}
+                  {product.quantity > 0 ? `${product.quantity} kg` : "Out of Stock"}
                 </p>
                 <div className="flex justify-between mt-4">
                   <Link
@@ -158,7 +154,7 @@ export default function FarmerDashboard() {
         )}
       </section>
 
-      {/* ✅ ORDER HISTORY FOR FARMER'S PRODUCTS */}
+      {/* 🧾 ORDER HISTORY */}
       <section>
         <h2 className="text-3xl font-bold text-green-700 mb-6">
           🧾 Orders for Your Products
@@ -196,7 +192,6 @@ export default function FarmerDashboard() {
                   </span>
                 </p>
 
-                {/* ✅ Status update select + button */}
                 <div className="flex text-gray-700 gap-2 items-center mt-2">
                   <select
                     value={statusUpdate[order._id] || ""}
@@ -216,7 +211,8 @@ export default function FarmerDashboard() {
                   </select>
                   <button
                     onClick={() => handleUpdateStatus(order._id)}
-                    className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                    disabled={!statusUpdate[order._id]}
+                    className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 disabled:opacity-50"
                   >
                     Update
                   </button>
