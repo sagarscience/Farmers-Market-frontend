@@ -107,7 +107,7 @@ export default function BuyerDashboard() {
                 }`}
               >
                 {product.stock > 0
-                  ? `In Stock: ${product.quantity} kg`
+                  ? `In Stock: ${product.stock} kg`
                   : "Out of Stock"}
               </p>
 

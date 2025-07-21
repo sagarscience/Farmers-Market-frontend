@@ -196,7 +196,7 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => {
-                const isAvailable = product.quantity > 0;
+                const isAvailable = product.stock > 0;
 
                 return (
                   <div
@@ -219,7 +219,7 @@ export default function Home() {
                     <div className="mt-2">
                       {isAvailable ? (
                         <p className="text-sm text-gray-600 font-medium">
-                          Stock: {product.quantity} kg available
+                          Stock: {product.stock} kg available
                         </p>
                       ) : (
                         <span className="inline-block bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full font-semibold">
