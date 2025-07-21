@@ -18,7 +18,7 @@ export default function OrderHistory() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/orders/my", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/orders/my`, {
           headers: {
             Authorization: `Bearer ${auth.token}`,
           },
@@ -36,7 +36,7 @@ export default function OrderHistory() {
   const handleDownloadInvoice = async (orderId) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/orders/${orderId}/invoice`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}/invoice`,
         {
           headers: {
             Authorization: `Bearer ${auth.token}`,

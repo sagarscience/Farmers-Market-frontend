@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const BACKEND_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const BACKEND_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function Register() {
   const [form, setForm] = useState({

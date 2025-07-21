@@ -16,7 +16,7 @@ export default function OrderTracking() {
     const fetchOrder = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:5000/api/orders/${orderId}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}`,
           {
             headers: {
               Authorization: `Bearer ${auth.token}`,
