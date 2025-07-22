@@ -189,6 +189,14 @@ export default function AdminDashboard() {
                 Ordered on: {new Date(order.createdAt).toLocaleString()}
               </p>
 
+              <p className="text-sm text-gray-700 mb-2">
+                  <strong>Current Status:</strong>{" "}
+                  <span className="text-green-700 font-semibold">
+                    {order.status}
+                  </span>
+                </p>
+
+
               <ul className="list-disc  text-gray-600 pl-6 text-sm mb-2">
                 {order.products.map((p, idx) => (
                   <li key={idx}>
