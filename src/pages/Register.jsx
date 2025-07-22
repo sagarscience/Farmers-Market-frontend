@@ -98,14 +98,7 @@ export default function Register() {
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </span>
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-9 text-sm text-gray-500 focus:outline-none"
-            tabIndex={-1}
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
+         
         </div>
 
         {/* Role */}
