@@ -105,7 +105,7 @@ export default function AdminDashboard() {
       <section className="mb-12">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-800">👥 Users</h2>
-          <div className="flex gap-2">
+          <div className="flex text-gray-600 gap-2">
             <input
               type="text"
               placeholder="Search by name"
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
                 <div>
                   <p className="font-semibold text-gray-800">{prod.name}</p>
                   <p className="text-sm text-gray-500">
-                    ₹{prod.price} • {prod.stock}kg • by {prod.createdBy?.name || "Unknown"}
+                    ₹{prod.price} / kg • {prod.stock}kg • by {prod.createdBy?.name || "Unknown"}
                   </p>
                 </div>
               </div>
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
                 Ordered on: {new Date(order.createdAt).toLocaleString()}
               </p>
 
-              <ul className="list-disc pl-6 text-sm mb-2">
+              <ul className="list-disc  text-gray-600 pl-6 text-sm mb-2">
                 {order.products.map((p, idx) => (
                   <li key={idx}>
                     {p.name} — ₹{p.price} × {p.quantity} = ₹{p.price * p.quantity}
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
                 ))}
               </ul>
 
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex  text-gray-600 items-center gap-2 mt-1">
                 <select
                   value={order._newStatus || ""}
                   onChange={(e) =>

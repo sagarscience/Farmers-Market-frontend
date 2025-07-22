@@ -132,7 +132,7 @@ export default function FarmerDashboard() {
                   }`}
                 >
                   <span className="font-semibold">Stock:</span>{" "}
-                  {product.quantity > 0 ? `${product.quantity} kg` : "Out of Stock"}
+                  {product.quantity > 0 ? `${product.stock} kg` : "Out of Stock"}
                 </p>
                 <div className="flex justify-between mt-4">
                   <Link

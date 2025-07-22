@@ -37,7 +37,7 @@ export default function Navbar() {
           FarmersMarket
         </Link>
 
-        {/* Desktop Links */}
+        {/* Dashboard Links */}
         <div className="hidden md:flex gap-6 items-center text-sm font-medium">
           {auth.token && (
             <Link to="/dashboard" className="hover:underline">
@@ -211,10 +211,17 @@ export default function Navbar() {
           )}
 
           <button
-            onClick={handleChatClick}
-            className="block w-full text-left bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100"
+            onClick={() => navigate("/chat")}
+            className="bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100"
           >
-            💬 Chat Room
+            🌍 Global Chat
+          </button>
+
+          <button
+            onClick={() => navigate("/chat/users")}
+            className="bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100"
+          >
+            👥 Private Chat
           </button>
 
           {auth.token ? (
