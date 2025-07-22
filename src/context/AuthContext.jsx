@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
         user: {
           name: decoded.name,
           email: decoded.email,
-          id: decoded.id,
+          _id: decoded.id,
         },
       });
     } catch (err) {
