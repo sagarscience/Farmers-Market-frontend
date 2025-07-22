@@ -14,12 +14,13 @@ export const ChatProvider = ({ children }) => {
   const [typingUser, setTypingUser] = useState("");
 
   useEffect(() => {
-    // Ensure user is authenticated with valid ID
-    console.log("auth state", auth);
+    console.log("🔍 Auth State in ChatContext:", auth);
 
-    if (!auth?.user?.name || !auth?.role || !auth?.user?._id) return;
+    if (!auth?.token || !auth?.user?.name || !auth?.role || !auth?.user?._id) {
+      console.log("⛔ Incomplete auth data, socket not connecting");
+      return;
+    }
 
-    // Prevent multiple socket connections
     if (!socketRef.current) {
       const newSocket = io(SOCKET_URL, {
         query: {

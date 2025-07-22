@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         setAuth({
           token,
           role: decoded.role,
-          user: { name: decoded.name, email: decoded.email, id: decoded.id },
+          user: { name: decoded.name, email: decoded.email, _id: decoded.id },
         });
       } catch (err) {
         console.error("Invalid token:", err);
