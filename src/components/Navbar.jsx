@@ -24,8 +24,16 @@ export default function Navbar() {
     <nav className="bg-green-600 text-white sticky top-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link to="/" onClick={closeMenu} className="flex items-center gap-2 text-xl font-bold">
-          <img src={logo} alt="FarmersMarket" className="h-8 w-8 object-contain" />
+        <Link
+          to="/"
+          onClick={closeMenu}
+          className="flex items-center gap-2 text-xl font-bold"
+        >
+          <img
+            src={logo}
+            alt="FarmersMarket"
+            className="h-8 w-8 object-contain"
+          />
           FarmersMarket
         </Link>
 
@@ -47,30 +55,49 @@ export default function Navbar() {
                   </span>
                 )}
               </Link>
-              <Link to="/orders" className="hover:underline">My Orders</Link>
+              <Link to="/orders" className="hover:underline">
+                My Orders
+              </Link>
             </>
           )}
 
           {auth.token && auth.role === "farmer" && (
             <>
-              <Link to="/dashboard/products" className="hover:underline">My Products</Link>
-              <Link to="/dashboard/orders" className="hover:underline">My Orders</Link>
+              <Link to="/dashboard/products" className="hover:underline">
+                My Products
+              </Link>
+              <Link to="/dashboard/orders" className="hover:underline">
+                My Orders
+              </Link>
             </>
           )}
 
           {auth.token && auth.role === "admin" && (
             <>
-              <Link to="/dashboard/users" className="hover:underline">Users</Link>
-              <Link to="/dashboard/products" className="hover:underline">All Products</Link>
-              <Link to="/dashboard/orders" className="hover:underline">All Orders</Link>
+              <Link to="/dashboard/users" className="hover:underline">
+                Users
+              </Link>
+              <Link to="/dashboard/products" className="hover:underline">
+                All Products
+              </Link>
+              <Link to="/dashboard/orders" className="hover:underline">
+                All Orders
+              </Link>
             </>
           )}
 
           <button
-            onClick={handleChatClick}
+            onClick={() => navigate("/chat")}
             className="bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100"
           >
-            💬 Chat Room
+            🌍 Global Chat
+          </button>
+
+          <button
+            onClick={() => navigate("/chat/users")}
+            className="bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100"
+          >
+            👥 Private Chat
           </button>
 
           {auth.token ? (
@@ -82,10 +109,16 @@ export default function Navbar() {
             </button>
           ) : (
             <>
-              <Link to="/login" className="bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100">
+              <Link
+                to="/login"
+                className="bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100"
+              >
                 Login
               </Link>
-              <Link to="/register" className="bg-white text-blue-600 px-3 py-1.5 rounded hover:bg-gray-100">
+              <Link
+                to="/register"
+                className="bg-white text-blue-600 px-3 py-1.5 rounded hover:bg-gray-100"
+              >
                 Register
               </Link>
             </>
@@ -104,17 +137,29 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden bg-green-700 px-6 py-4 space-y-4 text-sm font-medium">
           {auth.token && (
-            <Link to="/dashboard" onClick={closeMenu} className="block hover:underline">
+            <Link
+              to="/dashboard"
+              onClick={closeMenu}
+              className="block hover:underline"
+            >
               Dashboard ({auth.role})
             </Link>
           )}
 
           {auth.token && auth.role === "buyer" && (
             <>
-              <Link to="/cart" onClick={closeMenu} className="block hover:underline">
+              <Link
+                to="/cart"
+                onClick={closeMenu}
+                className="block hover:underline"
+              >
                 🛒 Cart ({cart.length})
               </Link>
-              <Link to="/orders" onClick={closeMenu} className="block hover:underline">
+              <Link
+                to="/orders"
+                onClick={closeMenu}
+                className="block hover:underline"
+              >
                 My Orders
               </Link>
             </>
@@ -122,16 +167,46 @@ export default function Navbar() {
 
           {auth.token && auth.role === "farmer" && (
             <>
-              <Link to="/dashboard/products" onClick={closeMenu} className="block hover:underline">My Products</Link>
-              <Link to="/dashboard/orders" onClick={closeMenu} className="block hover:underline">My Orders</Link>
+              <Link
+                to="/dashboard/products"
+                onClick={closeMenu}
+                className="block hover:underline"
+              >
+                My Products
+              </Link>
+              <Link
+                to="/dashboard/orders"
+                onClick={closeMenu}
+                className="block hover:underline"
+              >
+                My Orders
+              </Link>
             </>
           )}
 
           {auth.token && auth.role === "admin" && (
             <>
-              <Link to="/dashboard/users" onClick={closeMenu} className="block hover:underline">Users</Link>
-              <Link to="/dashboard/products" onClick={closeMenu} className="block hover:underline">All Products</Link>
-              <Link to="/dashboard/orders" onClick={closeMenu} className="block hover:underline">All Orders</Link>
+              <Link
+                to="/dashboard/users"
+                onClick={closeMenu}
+                className="block hover:underline"
+              >
+                Users
+              </Link>
+              <Link
+                to="/dashboard/products"
+                onClick={closeMenu}
+                className="block hover:underline"
+              >
+                All Products
+              </Link>
+              <Link
+                to="/dashboard/orders"
+                onClick={closeMenu}
+                className="block hover:underline"
+              >
+                All Orders
+              </Link>
             </>
           )}
 
@@ -154,10 +229,18 @@ export default function Navbar() {
             </button>
           ) : (
             <>
-              <Link to="/login" onClick={closeMenu} className="block bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100">
+              <Link
+                to="/login"
+                onClick={closeMenu}
+                className="block bg-white text-green-600 px-3 py-1.5 rounded hover:bg-gray-100"
+              >
                 Login
               </Link>
-              <Link to="/register" onClick={closeMenu} className="block bg-white text-blue-600 px-3 py-1.5 rounded hover:bg-gray-100">
+              <Link
+                to="/register"
+                onClick={closeMenu}
+                className="block bg-white text-blue-600 px-3 py-1.5 rounded hover:bg-gray-100"
+              >
                 Register
               </Link>
             </>

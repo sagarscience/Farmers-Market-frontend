@@ -16,7 +16,7 @@ export const ChatProvider = ({ children }) => {
     if (!auth?.user?.name || !auth?.role) return;
 
     const newSocket = io(SOCKET_URL, {
-      query: { name: auth.user.name, role: auth.role },
+      query: { name: auth.user.name, role: auth.role, userId: auth.user._id },
       transports: ["websocket"], // Force WebSocket for more stable connection
     });
 
@@ -51,7 +51,7 @@ export const ChatProvider = ({ children }) => {
       setOnlineUsers([]);
       setTypingUser("");
     };
-  }, [auth?.user?.name, auth?.role]);
+  }, [auth]);
 
   return (
     <ChatContext.Provider value={{ socket, onlineUsers, typingUser }}>

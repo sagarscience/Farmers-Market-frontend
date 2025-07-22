@@ -21,6 +21,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import OrderTracking from "./pages/OrderTracking";
 import ChatRoom from "./pages/ChatRoom";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import ChatUserList from "./pages/ChatUserList";
 
 export default function App() {
   const { auth, loading } = useAuth();
@@ -142,6 +143,10 @@ export default function App() {
 
         {/* Public Chat Page */}
         <Route path="/chat" element={<ChatRoom />} />
+        {/* Protected Chat Room */}
+        <Route path="/chat/:roomId" element={<ChatRoom />} />
+        {/* Protected Chat User List */}
+        <Route path="/chat/users" element={<ChatUserList />} />
       </Routes>
 
       <Footer />

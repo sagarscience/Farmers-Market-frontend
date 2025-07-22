@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react";
 
 const BACKEND_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
@@ -26,6 +27,10 @@ export default function Register() {
       console.error(err);
       toast.error("Registration failed. Try again.");
     }
+  };
+
+   const togglePassword = () => {
+    setShowPassword((prev) => !prev);
   };
 
   return (
@@ -86,6 +91,13 @@ export default function Register() {
             className="w-full p-2 border border-gray-300 rounded text-black focus:outline-none focus:ring-2 focus:ring-green-400"
             required
           />
+          <span
+              onClick={togglePassword}
+              className="absolute top-9 right-3 text-gray-500 cursor-pointer"
+              title={showPassword ? "Hide Password" : "Show Password"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </span>
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
