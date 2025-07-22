@@ -15,6 +15,8 @@ export const ChatProvider = ({ children }) => {
 
   useEffect(() => {
     // Ensure user is authenticated with valid ID
+    console.log("auth state", auth);
+
     if (!auth?.user?.name || !auth?.role || !auth?.user?._id) return;
 
     // Prevent multiple socket connections
