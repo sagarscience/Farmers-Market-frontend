@@ -70,7 +70,7 @@ export default function ChatRoom() {
 
     socket.emit("sendMessage", {
       roomId,
-      senderName: auth.user.name,
+      sender: auth.user.name,
       senderId: auth.user._id,
       recieverId: roomId === "global" ? "global" : recieverId,
       role: auth.role,
