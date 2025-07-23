@@ -22,14 +22,14 @@ export default function ChatRoom() {
     }
   }, [auth.token, loading, navigate]);
 
-  // Join chat room
+  // Join room on load
   useEffect(() => {
     if (socket && roomId && auth?.user?.name) {
       socket.emit("joinRoom", roomId);
     }
   }, [socket, roomId, auth?.user?.name]);
 
-  // Socket listeners
+  // Load and receive messages
   useEffect(() => {
     if (!socket) return;
 
@@ -44,7 +44,7 @@ export default function ChatRoom() {
     };
   }, [socket]);
 
-  // Scroll to bottom when messages update
+  // Auto scroll to latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -52,26 +52,33 @@ export default function ChatRoom() {
   const handleTyping = (e) => {
     setMessage(e.target.value);
     if (socket && auth?.user?.name) {
-      socket.emit("typing", { from: auth.user.name });
+      socket.emit("typing", { from: auth.user.name, roomId });
     }
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
-      socket.emit("stopTyping");
+      socket.emit("stopTyping", { roomId });
     }, 1000);
   };
 
   const handleSend = () => {
     if (!message.trim() || !socket || !auth?.user?.name) return;
 
+    const [user1, user2] = roomId.split("_");
+    const recieverId =
+      user1 === auth.user._id ? user2 : user1;
+
     socket.emit("sendMessage", {
       roomId,
       sender: auth.user.name,
+      senderId: auth.user._id,
+      recieverId: roomId === "global" ? "global" : recieverId,
       role: auth.role,
       message,
     });
+
     setMessage("");
-    socket.emit("stopTyping");
+    socket.emit("stopTyping", { roomId });
   };
 
   const filteredMessages = messages.filter(
@@ -82,7 +89,7 @@ export default function ChatRoom() {
 
   return (
     <div className="max-w-5xl mx-auto mt-10 p-6 bg-white shadow rounded flex flex-col sm:flex-row gap-4">
-      {/* Online Users */}
+      {/* Sidebar: Online Users */}
       <div className="w-full sm:w-1/4 border-r pr-4">
         <h3 className="text-lg font-semibold text-green-700 mb-3">🟢 Online Users</h3>
         {onlineUsers.length === 0 ? (
@@ -99,9 +106,11 @@ export default function ChatRoom() {
         )}
       </div>
 
-      {/* Chat Panel */}
+      {/* Chat Window */}
       <div className="flex-1 flex flex-col">
-        <h2 className="text-xl font-bold mb-4 text-green-700">💬 Chat Room: {roomId}</h2>
+        <h2 className="text-xl font-bold mb-4 text-green-700">
+          💬 Chat Room: {roomId === "global" ? "🌍 Global" : `Private (${roomId})`}
+        </h2>
 
         <input
           type="text"

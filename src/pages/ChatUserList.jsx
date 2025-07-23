@@ -8,9 +8,11 @@ export default function ChatUserList() {
   const navigate = useNavigate();
 
   const handleSelectUser = (user) => {
-    const myName = auth.user?.name;
-    const otherName = user.name;
-    const roomId = [myName, otherName].sort().join("_");
+    const myId = auth.user?._id;
+    const otherId = user.userId || user._id;
+
+    // Generate a unique room ID based on sorted user IDs
+    const roomId = [myId, otherId].sort().join("_");
     navigate(`/chat/${roomId}`);
   };
 
@@ -23,7 +25,7 @@ export default function ChatUserList() {
       ) : (
         <ul className="space-y-3">
           {onlineUsers
-            .filter((u) => u.name !== auth.user?.name)
+            .filter((u) => u.userId !== auth.user?._id) // exclude self
             .map((user, i) => (
               <li
                 key={i}
