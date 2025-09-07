@@ -54,7 +54,10 @@ export default function AddProduct() {
       alert("✅ Product added successfully!");
       navigate("/dashboard");
     } catch (error) {
-      console.error("❌ Add product error:", error.response?.data || error.message);
+      console.error(
+        "❌ Add product error:",
+        error.response?.data || error.message
+      );
       alert("Failed to add product.");
     } finally {
       setLoading(false);
@@ -73,7 +76,10 @@ export default function AddProduct() {
 
         {/* Product Name */}
         <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-medium mb-1">
+          <label
+            htmlFor="name"
+            className="block text-gray-700 font-medium mb-1"
+          >
             Product Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -84,13 +90,16 @@ export default function AddProduct() {
             onChange={handleChange}
             placeholder="e.g. Fresh Tomatoes"
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border text-gray-600 border-gray-300 rounded"
           />
         </div>
 
         {/* Description */}
         <div className="mb-4">
-          <label htmlFor="description" className="block text-gray-700 font-medium mb-1">
+          <label
+            htmlFor="description"
+            className="block text-gray-700 font-medium mb-1"
+          >
             Description <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -101,13 +110,16 @@ export default function AddProduct() {
             onChange={handleChange}
             placeholder="Brief description about the product"
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border text-gray-600 border-gray-300 rounded"
           ></textarea>
         </div>
 
         {/* Price */}
         <div className="mb-4">
-          <label htmlFor="price" className="block text-gray-700 font-medium mb-1">
+          <label
+            htmlFor="price"
+            className="block text-gray-700 font-medium mb-1"
+          >
             Price (₹ per kg) <span className="text-red-500">*</span>
           </label>
           <input
@@ -120,13 +132,16 @@ export default function AddProduct() {
             onChange={handleChange}
             placeholder="e.g. 25"
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border text-gray-600 border-gray-300 rounded"
           />
         </div>
 
         {/* Stock */}
         <div className="mb-4">
-          <label htmlFor="stock" className="block text-gray-700 font-medium mb-1">
+          <label
+            htmlFor="stock"
+            className="block text-gray-700 font-medium mb-1"
+          >
             Stock Quantity (kg) <span className="text-red-500">*</span>
           </label>
           <input
@@ -138,13 +153,16 @@ export default function AddProduct() {
             onChange={handleChange}
             placeholder="e.g. 100"
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border text-gray-600 border-gray-300 rounded"
           />
         </div>
 
         {/* Image URL */}
         <div className="mb-4">
-          <label htmlFor="imageUrl" className="block text-gray-700 font-medium mb-1">
+          <label
+            htmlFor="imageUrl"
+            className="block text-gray-700 font-medium mb-1"
+          >
             Image URL (optional)
           </label>
           <input
@@ -154,7 +172,7 @@ export default function AddProduct() {
             value={product.imageUrl}
             onChange={handleChange}
             placeholder="https://example.com/image.jpg"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border text-gray-600 border-gray-300 rounded"
           />
         </div>
 
