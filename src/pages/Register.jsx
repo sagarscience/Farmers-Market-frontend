@@ -90,6 +90,7 @@ export default function Register() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className="w-full p-2 border border-gray-300 rounded text-black focus:outline-none focus:ring-2 focus:ring-green-400"
             required
+            
           />
           <span
               onClick={togglePassword}

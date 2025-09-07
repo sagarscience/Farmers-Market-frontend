@@ -24,15 +24,15 @@ export default function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !product.name.trim() ||
-      !product.description.trim() ||
-      !product.price ||
-      !product.quantity
-    ) {
-      alert("Please fill in all required fields.");
-      return;
-    }
+    // if (
+    //   !product.name.trim() ||
+    //   !product.description.trim() ||
+    //   !product.price ||
+    //   !product.quantity
+    // ) {
+    //   alert("Please fill in all required fields.");
+    //   return;
+    // }
 
     if (product.price <= 0 || product.quantity <= 0) {
       alert("Price and quantity must be greater than zero.");
