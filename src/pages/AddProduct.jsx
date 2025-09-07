@@ -42,7 +42,7 @@ export default function AddProduct() {
     try {
       setLoading(true);
       await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/products`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/products`,
         product,
         {
           headers: {
